@@ -8,41 +8,50 @@
       @click-left="$router.back()"
     />
     <!-- 输入表单 -->
-    <van-cell-group>
-      <!-- 手机号 -->
-      <van-field
-        v-model="user.mobile"
-        left-icon="phone-o"
-        placeholder="请输入手机号"
-      />
-      <!-- 验证码 -->
-      <van-field
-        v-model="user.code"
-        clearable
-        left-icon="warn-o"
-        placeholder="请输入验证码"
-      >
-        <!-- 验证码行内按钮 -->
-        <template #button>
-          <van-button
-            class="send-btn"
-            size="mini"
-            round
-          >
-            发送验证码
-          </van-button>
-        </template>
-      </van-field>
-    </van-cell-group>
-    <!-- 登录按钮 -->
-    <div class="login-btn-warp">
-      <van-button
-        class="login-btn"
-        type="info"
-        block
-        @click="onLogin"
-      >登录</van-button>
-    </div>
+    <van-form
+      :show-error="false"
+      :show-error-message="false"
+      validate-first
+      @submit="onLogin"
+      @failed="onFailed"
+    >
+      <van-cell-group>
+        <!-- 手机号 -->
+        <van-field
+          v-model="user.mobile"
+          left-icon="phone-o"
+          placeholder="请输入手机号"
+          :rules="formRules.mobile"
+        />
+        <!-- 验证码 -->
+        <van-field
+          v-model="user.code"
+          clearable
+          left-icon="warn-o"
+          placeholder="请输入验证码"
+          :rules="formRules.code"
+        >
+          <!-- 验证码行内按钮 -->
+          <template #button>
+            <van-button
+              class="send-btn"
+              size="mini"
+              round
+            >
+              发送验证码
+            </van-button>
+          </template>
+        </van-field>
+      </van-cell-group>
+      <!-- 登录按钮 -->
+      <div class="login-btn-warp">
+        <van-button
+          class="login-btn"
+          type="info"
+          block
+        >登录</van-button>
+      </div>
+    </van-form>
   </div>
 </template>
 
@@ -56,6 +65,16 @@ export default {
       user: {
         mobile: '',
         code: ''
+      },
+      formRules: {
+        mobile: [
+          { required: true, message: '请输入手机号' },
+          { pattern: /^1[3|5|7|8|9]\d{9}$/, message: '手机号格式错误' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码' },
+          { pattern: /\d{7}/, message: '验证码格式错误' }
+        ]
       }
     }
   },
@@ -76,6 +95,11 @@ export default {
           console.log('登陆失败', err)
           this.$toast.fail('登陆失败\n手机号或验证码错误')
         }
+      }
+    },
+    onFailed (error) {
+      if (error.errors[0]) {
+        this.$toast({ message: error.errors[0].message, position: 'top' })
       }
     }
   }
