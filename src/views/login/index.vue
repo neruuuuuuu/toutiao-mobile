@@ -40,12 +40,15 @@
         class="login-btn"
         type="info"
         block
+        @click="onLogin"
       >登录</van-button>
     </div>
   </div>
 </template>
 
 <script>
+import { login } from '@/api/user'
+
 export default {
   name: 'LoginIndex',
   data () {
@@ -53,6 +56,26 @@ export default {
       user: {
         mobile: '',
         code: ''
+      }
+    }
+  },
+  methods: {
+    async onLogin () {
+      this.$toast.loading({
+        duration: 0, // 持续时间，0表示持续展示不停止
+        forbidClick: true, // 是否禁止背景点击
+        message: '登录中...' // 提示消息
+      })
+
+      try {
+        const res = await login(this.user)
+        console.log('登陆成功', res)
+        this.$toast.success('登陆成功')
+      } catch (err) {
+        if (err.response.status === 400) {
+          console.log('登陆失败', err)
+          this.$toast.fail('登陆失败\n手机号或验证码错误')
+        }
       }
     }
   }
