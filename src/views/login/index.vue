@@ -12,6 +12,7 @@
       :show-error="false"
       :show-error-message="false"
       validate-first
+      ref="login-form"
       @submit="onLogin"
       @failed="onFailed"
     >
@@ -20,6 +21,7 @@
         <van-field
           v-model="user.mobile"
           left-icon="phone-o"
+          name="mobile"
           placeholder="请输入手机号"
           :rules="formRules.mobile"
         />
@@ -28,15 +30,27 @@
           v-model="user.code"
           clearable
           left-icon="warn-o"
+          name="code"
           placeholder="请输入验证码"
           :rules="formRules.code"
         >
           <!-- 验证码行内按钮 -->
           <template #button>
+            <!-- 倒计时 -->
+            <van-count-down
+              v-if="isCountDownShow"
+              :time="60 * 1000"
+              format="ss s"
+              @finish="isCountDownShow=false"
+            />
+            <!-- 按钮 -->
             <van-button
+              v-else
               class="send-btn"
               size="mini"
               round
+              :disabled="isSendSmsDisabled"
+              @click.prevent="onSendSms"
             >
               发送验证码
             </van-button>
@@ -56,7 +70,7 @@
 </template>
 
 <script>
-import { login } from '@/api/user'
+import { login, sendSms } from '@/api/user'
 
 export default {
   name: 'LoginIndex',
@@ -75,7 +89,9 @@ export default {
           { required: true, message: '请输入验证码' },
           { pattern: /\d{7}/, message: '验证码格式错误' }
         ]
-      }
+      },
+      isCountDownShow: false,
+      isSendSmsDisabled: false
     }
   },
   methods: {
@@ -90,9 +106,9 @@ export default {
         const res = await login(this.user)
         console.log('登陆成功', res)
         this.$toast.success('登陆成功')
-      } catch (err) {
-        if (err.response.status === 400) {
-          console.log('登陆失败', err)
+      } catch (error) {
+        if (error.response.status === 400) {
+          console.log('登陆失败', error)
           this.$toast.fail('登陆失败\n手机号或验证码错误')
         }
       }
@@ -101,6 +117,29 @@ export default {
       if (error.errors[0]) {
         this.$toast({ message: error.errors[0].message, position: 'top' })
       }
+    },
+    async onSendSms () {
+      try {
+        // 校验手机号码
+        await this.$refs['login-form'].validate('mobile')
+        this.isSendSmsDisabled = true
+
+        // 验证通过，请求发送验证码
+        await sendSms(this.user.mobile)
+        this.isCountDownShow = true
+      } catch (error) {
+        console.log(error.response)
+        let message = ''
+        if (error && error.response && error.response.status === 429) {
+          message = '发送太频繁了，请稍后再试'
+        } else if (error.name === 'mobile') {
+          message = error.message
+        } else {
+          message = '发送失败，请稍后再试'
+        }
+        this.$toast({ message, position: 'top' })
+      }
+      this.isSendSmsDisabled = false
     }
   }
 }
