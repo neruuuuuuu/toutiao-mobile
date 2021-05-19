@@ -87,7 +87,7 @@ export default {
         ],
         code: [
           { required: true, message: '请输入验证码' },
-          { pattern: /\d{7}/, message: '验证码格式错误' }
+          { pattern: /\d{6}/, message: '验证码格式错误' }
         ]
       },
       isCountDownShow: false,
@@ -103,9 +103,10 @@ export default {
       })
 
       try {
-        const res = await login(this.user)
-        console.log('登陆成功', res)
+        const { data } = await login(this.user)
+        console.log('登陆成功', data)
         this.$toast.success('登陆成功')
+        this.$store.commit('setUser', data.data)
       } catch (error) {
         if (error.response.status === 400) {
           console.log('登陆失败', error)
@@ -119,27 +120,40 @@ export default {
       }
     },
     async onSendSms () {
-      try {
-        // 校验手机号码
-        await this.$refs['login-form'].validate('mobile')
-        this.isSendSmsDisabled = true
+      // try {
+      //   // 校验手机号码
+      //   await this.$refs['login-form'].validate('mobile')
+      //   this.isSendSmsDisabled = true
 
-        // 验证通过，请求发送验证码
-        await sendSms(this.user.mobile)
-        this.isCountDownShow = true
-      } catch (error) {
-        console.log(error.response)
-        let message = ''
-        if (error && error.response && error.response.status === 429) {
-          message = '发送太频繁了，请稍后再试'
-        } else if (error.name === 'mobile') {
-          message = error.message
-        } else {
-          message = '发送失败，请稍后再试'
-        }
-        this.$toast({ message, position: 'top' })
-      }
-      this.isSendSmsDisabled = false
+      //   // 验证通过，请求发送验证码
+      //   await sendSms(this.user.mobile)
+      //   this.isCountDownShow = true
+      // } catch (error) {
+      //   console.log(error.response)
+      //   let message = ''
+      //   if (error && error.response && error.response.status === 429) {
+      //     message = '发送太频繁了，请稍后再试'
+      //   } else if (error.name === 'mobile') {
+      //     message = error.message
+      //   } else {
+      //     message = '发送失败，请稍后再试'
+      //   }
+      //   this.$toast({ message, position: 'top' })
+      // }
+      // this.isSendSmsDisabled = false
+      //
+      this.$refs['login-form'].validate('mobile').then(res => {
+        sendSms(this.user.mobile).then(res1 => {
+          this.isSendSmsDisabled = true
+          this.isCountDownShow = true
+        }).catch(error => {
+          if (error && error.response && error.response.status === 429) {
+            this.$toast({ message: '发送太频繁了，请稍后再试', position: 'top' })
+          }
+        }).finally(() => { this.isSendSmsDisabled = false })
+      }).catch(res => {
+        this.$toast({ message: res.message, position: 'top' })
+      })
     }
   }
 }
