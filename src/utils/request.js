@@ -12,7 +12,7 @@ request.interceptors.request.use(function (config) {
   const { user } = store.state
   // 如果用户已登录，统一给接口设置 token 信息
   if (user) {
-    config.headers.Authorization = 'Bearer {user.token}'
+    config.headers.Authorization = `Bearer ${user.token}`
   }
   return config
 }, function (error) {

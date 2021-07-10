@@ -96,12 +96,17 @@ export default {
   },
   methods: {
     async onLogin () {
+      let success = false
       this.$toast.loading({
         duration: 0, // 持续时间，0表示持续展示不停止
         forbidClick: true, // 是否禁止背景点击
         message: '登录中...' // 提示消息
       })
-
+      setTimeout(() => {
+        if (!success) {
+          this.$toast({ message: '登录超时', position: 'top' })
+        }
+      }, 2000)
       try {
         const { data } = await login(this.user)
         console.log('登陆成功', data)
@@ -113,6 +118,8 @@ export default {
           console.log('登陆失败', error)
           this.$toast.fail('登陆失败\n手机号或验证码错误')
         }
+      } finally {
+        success = true
       }
     },
     onFailed (error) {
