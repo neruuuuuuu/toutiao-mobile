@@ -7,15 +7,16 @@
       @load="onLoad"
     >
       <van-cell
-        v-for="item in list"
-        :key="item"
-        :title="item"
+        v-for="(article,index) in articles"
+        :key="index"
+        :title="article.title"
       />
     </van-list>
   </div>
 </template>
 
 <script>
+import { getArticles } from '@/api/article'
 export default {
   name: 'ArticleList',
   props: {
@@ -26,28 +27,32 @@ export default {
   },
   data () {
     return {
-      list: [],
+      articles: [],
       loading: false,
-      finished: false
+      finished: false,
+      timestamp: null
     }
   },
   methods: {
-    onLoad () {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-
-        // 加载状态结束
-        this.loading = false
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 1000)
+    async onLoad () {
+      console.log('onLoad')
+      const { data } = await getArticles({
+        channel_id: this.channels.id,
+        timestamp: this.timestamp || Date.now(), // 如果timestamp为null，使用Dat.now()
+        with_top: 1
+      })
+      console.log(data)
+      // ...为扩展运算符
+      const { results } = data.data
+      this.articles.push(...results)
+      // 加载状态结束
+      this.loading = false
+      // 数据全部加载完成
+      if (results.length) {
+        this.timestamp = data.data.pre_timestamp
+      } else {
+        this.finished = true
+      }
     }
   }
 }
