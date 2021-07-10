@@ -1,6 +1,9 @@
 <template>
   <div class="my-container">
-    <van-cell-group class="my-info">
+    <van-cell-group
+      v-if="user"
+      class="my-info"
+    >
       <!-- 第一行 -->
       <van-cell
         class="frist-row"
@@ -56,8 +59,32 @@
       </van-grid>
 
     </van-cell-group>
+    <div
+      v-else
+      class="no-login"
+    >
+      <van-image
+        @click="$router.push('/login')"
+        class="avatar"
+        slot="icon"
+        width="60"
+        height="60"
+        round
+        fit="cover"
+        src="https://img01.yzcdn.cn/vant/cat.jpeg"
+      />
+
+      <div
+        class="click-login"
+        @click="$router.push('/login')"
+      >点击登录</div>
+
+    </div>
     <!-- 第三行 -->
-    <van-grid :column-num="2">
+    <van-grid
+      :column-num="2"
+      class="mb-4"
+    >
       <van-grid-item
         icon="star-o"
         text="收藏"
@@ -69,23 +96,47 @@
     </van-grid>
     <!-- 第四行 -->
     <van-cell
+      v-if="user"
       title="消息通知"
       is-link
       to=""
     />
     <van-cell
+      class="mb-4"
       title="小小同学"
       is-link
       to=""
     />
     <!-- 第五行 -->
-    <van-cell title="退出登录" />
+    <van-cell
+      v-if="user"
+      class="fifth-row"
+      title="退出登录"
+      @click="onLogout"
+    />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  name: 'MyIndex'
+  name: 'MyIndex',
+  computed: {
+    ...mapState(['user'])
+  },
+  methods: {
+    onLogout () {
+      this.$dialog.confirm({
+        title: '退出提示',
+        message: '是否确认退出？'
+      }).then(() => {
+        this.$store.commit('setUser', null)
+      }).catch(() => {
+
+      })
+    }
+  }
 }
 </script>
 
@@ -93,6 +144,7 @@ export default {
 .my-container {
   .my-info {
     background-color: rgb(250, 152, 177);
+
     .frist-row {
       // box-sizing: border-box;
       background-color: unset;
@@ -112,6 +164,22 @@ export default {
       font-size: 15px;
       color: #fff;
     }
+  }
+  .no-login {
+    height: 200px;
+    background-color: rgb(250, 152, 177);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .fifth-row {
+    text-align: center;
+    color: rgb(216, 105, 72);
+  }
+  .mb-4 {
+    margin-bottom: 4px;
   }
 }
 </style>
