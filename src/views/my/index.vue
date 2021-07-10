@@ -7,8 +7,6 @@
       <!-- 第一行 -->
       <van-cell
         class="frist-row"
-        title="单元格"
-        value="内容"
         center
         :border="false"
       >
@@ -19,12 +17,12 @@
           height="60"
           round
           fit="cover"
-          src="https://img01.yzcdn.cn/vant/cat.jpeg"
+          :src="userInfo.photo"
         />
         <div
           class="name"
           slot="title"
-        >昵称</div>
+        >{{userInfo.name}}</div>
         <van-button
           size="small"
           round
@@ -34,25 +32,25 @@
       <van-grid :border="false">
         <van-grid-item>
           <div slot="text">
-            <div class="span">12</div>
+            <div class="span">{{ userInfo.art_count }}</div>
             <div class="text">头条</div>
           </div>
         </van-grid-item>
         <van-grid-item>
           <div slot="text">
-            <div class="span">12</div>
+            <div class="span">{{userInfo.follow_count}}</div>
             <div class="text">关注</div>
           </div>
         </van-grid-item>
         <van-grid-item>
           <div slot="text">
-            <div class="span">999</div>
+            <div class="span">{{userInfo.fans_count}}</div>
             <div class="text">粉丝</div>
           </div>
         </van-grid-item>
         <van-grid-item>
           <div slot="text">
-            <div class="span">12</div>
+            <div class="span">{{userInfo.like_count}}</div>
             <div class="text">获赞</div>
           </div>
         </van-grid-item>
@@ -119,22 +117,36 @@
 
 <script>
 import { mapState } from 'vuex'
+import { getUserInfo } from '@/api/user'
 
 export default {
   name: 'MyIndex',
+  data () {
+    return {
+      userInfo: {} // 当前用户信息
+    }
+  },
   computed: {
     ...mapState(['user'])
   },
+  created () {
+    this.loadUserInfo()
+  },
   methods: {
+    // 加载用户信息
+    async loadUserInfo () {
+      const { data } = await getUserInfo()
+      console.log(data)
+      this.userInfo = data.data
+    },
+    // 退出登录方法
     onLogout () {
       this.$dialog.confirm({
         title: '退出提示',
         message: '是否确认退出？'
       }).then(() => {
         this.$store.commit('setUser', null)
-      }).catch(() => {
-
-      })
+      }).catch(() => { })
     }
   }
 }
