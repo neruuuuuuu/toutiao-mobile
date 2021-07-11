@@ -14,9 +14,11 @@ request.interceptors.request.use(function (config) {
   if (user) {
     config.headers.Authorization = `Bearer ${user.token}`
   }
+  console.log('拦截器成功')
   return config
 }, function (error) {
   // Do something with request error
+  console.log('拦截器失败')
   return Promise.reject(error)
 })
 

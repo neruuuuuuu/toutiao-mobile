@@ -1,17 +1,23 @@
 <template>
   <div class="article-list">
-    <van-list
-      v-model="loading"
-      :finished="finished"
-      finished-text="没有更多了"
-      @load="onLoad"
+    <van-pull-refresh
+      v-model="isRefreshLoading"
+      success-text="刷新成功"
+      @refresh="onRefresh"
     >
-      <van-cell
-        v-for="(article,index) in articles"
-        :key="index"
-        :title="article.title"
-      />
-    </van-list>
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="onLoad"
+      >
+        <van-cell
+          v-for="(article,index) in articles"
+          :key="index"
+          :title="article.title"
+        />
+      </van-list>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -30,10 +36,12 @@ export default {
       articles: [],
       loading: false,
       finished: false,
-      timestamp: null
+      timestamp: null,
+      isRefreshLoading: false
     }
   },
   methods: {
+    // 加载文章列表数据方法
     async onLoad () {
       console.log('onLoad')
       const { data } = await getArticles({
@@ -41,6 +49,7 @@ export default {
         timestamp: this.timestamp || Date.now(), // 如果timestamp为null，使用Dat.now()
         with_top: 1
       })
+      console.log('请求获取数据展示')
       console.log(data)
       // ...为扩展运算符
       const { results } = data.data
@@ -53,9 +62,21 @@ export default {
       } else {
         this.finished = true
       }
+    },
+    // 刷新文章列表
+    async onRefresh () {
+      const { data } = await getArticles({
+        channel_id: this.channels.id,
+        timestamp: Date.now(), // 如果timestamp为null，使用Dat.now()
+        with_top: 1
+      })
+      const { results } = data.data
+      this.articles.unshift(...results)
+      this.isRefreshLoading = false
     }
   }
 }
+
 </script>
 
 <style scoped lang="less">
