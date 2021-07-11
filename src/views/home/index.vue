@@ -27,7 +27,7 @@
 
 <script>
 import { getUserChannels } from '@/api/user.js'
-import ArticleList from '@/components/article-list'
+import ArticleList from '@/views/home/components/article-list'
 
 export default {
   name: 'homeIndex',
