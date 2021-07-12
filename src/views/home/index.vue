@@ -24,7 +24,20 @@
         <!-- 文章列表 -->
         <article-list :channels="channels"></article-list>
       </van-tab>
+      <div
+        class="van-tab-placeholder"
+        slot="nav-right"
+      ></div>
+      <!-- 汉堡按钮 -->
+      <div
+        slot="nav-right"
+        class="wap-nav-wrap"
+        @click="isChannelsEditShow=true"
+      >
+        <van-icon name="wap-nav" />
+      </div>
     </van-tabs>
+
     <!-- 频道弹出层 -->
     <van-popup
       class="channels-edit"
@@ -75,7 +88,11 @@ export default {
       height: 32px;
     }
   }
+
   .channels-tabs {
+    /deep/ .van-tabs__nav--complete {
+      padding-right: 0;
+    }
     /deep/ .van-tab {
       border-right: 1px solid #e0e0e0;
       border-bottom: 1px solid #e0e0e0;
@@ -86,6 +103,27 @@ export default {
       bottom: 0.6rem;
       width: 15px;
       background-color: rgb(255, 187, 199);
+    }
+
+    .van-tab-placeholder {
+      width: 33px;
+      flex-shrink: 0;
+    }
+
+    .wap-nav-wrap {
+      position: fixed;
+      right: 0;
+      width: 33px;
+      height: 43.2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      border-left: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
+      /deep/ .van-icon {
+        font-size: 24px;
+      }
     }
   }
 }
