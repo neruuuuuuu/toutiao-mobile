@@ -12,7 +12,10 @@
       </template>
     </van-nav-bar>
     <!-- 频道 -->
-    <van-tabs v-model="active">
+    <van-tabs
+      class="channels-tabs"
+      v-model="active"
+    >
       <van-tab
         :title="channels.name"
         :key="channels.id"
@@ -60,6 +63,18 @@ export default {
     background: rgb(255, 187, 199);
     /deep/ .van-search {
       height: 32px;
+    }
+  }
+  .channels-tabs {
+    /deep/ .van-tab {
+      border-right: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    /deep/ .van-tabs__line {
+      position: absolute;
+      bottom: 0.6rem;
+      width: 15px;
+      background-color: rgb(255, 187, 199);
     }
   }
 }

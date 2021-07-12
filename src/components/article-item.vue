@@ -12,7 +12,7 @@
         <van-image
           class="right-img"
           fit="cover"
-          :src="article.cover.images"
+          :src="article.cover.images[0]"
         />
       </div>
       <!-- 单元格标题下方内容 -->
