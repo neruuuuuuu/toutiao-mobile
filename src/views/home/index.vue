@@ -25,6 +25,15 @@
         <article-list :channels="channels"></article-list>
       </van-tab>
     </van-tabs>
+    <!-- 频道弹出层 -->
+    <van-popup
+      class="channels-edit"
+      v-model="isChannelsEditShow"
+      position="bottom"
+      closeable
+      close-icon-position="top-left"
+      get-container="body"
+    ></van-popup>
   </div>
 </template>
 
@@ -41,7 +50,8 @@ export default {
     return {
       active: 0,
       userChannels: [],
-      value: null
+      value: null,
+      isChannelsEditShow: false
     }
   },
   created () {
@@ -70,6 +80,7 @@ export default {
       border-right: 1px solid #e0e0e0;
       border-bottom: 1px solid #e0e0e0;
     }
+
     /deep/ .van-tabs__line {
       position: absolute;
       bottom: 0.6rem;
@@ -77,5 +88,8 @@ export default {
       background-color: rgb(255, 187, 199);
     }
   }
+}
+.channels-edit {
+  height: 100%;
 }
 </style>
