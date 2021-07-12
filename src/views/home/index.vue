@@ -40,24 +40,27 @@
 
     <!-- 频道弹出层 -->
     <van-popup
-      class="channels-edit"
+      class="channels-edit-popup"
       v-model="isChannelsEditShow"
       position="bottom"
       closeable
       close-icon-position="top-left"
       get-container="body"
-    ></van-popup>
+    >
+      <channels-edit :myChannels="userChannels"></channels-edit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user.js'
 import ArticleList from '@/views/home/components/article-list'
-
+import ChannelsEdit from './components/channels-edit.vue'
 export default {
-  name: 'homeIndex',
+  name: 'HomeIndex',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelsEdit
   },
   data () {
     return {
@@ -127,7 +130,10 @@ export default {
     }
   }
 }
-.channels-edit {
+.channels-edit-popup {
   height: 100%;
+  /deep/ .van-popup__close-icon {
+    color: #444;
+  }
 }
 </style>
