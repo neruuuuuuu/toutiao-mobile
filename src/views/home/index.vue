@@ -43,11 +43,14 @@
       class="channels-edit-popup"
       v-model="isChannelsEditShow"
       position="bottom"
-      closeable
-      close-icon-position="top-left"
       get-container="body"
     >
-      <channels-edit :myChannels="userChannels"></channels-edit>
+      <channels-edit
+        :myChannels="userChannels"
+        :active="active"
+        @close="isChannelsEditShow = false,active = $event"
+        @u-active="active = $event"
+      ></channels-edit>
     </van-popup>
   </div>
 </template>
@@ -91,7 +94,9 @@ export default {
       height: 32px;
     }
   }
-
+  /deep/ .van-tabs__nav {
+    background-color: #ffeded;
+  }
   .channels-tabs {
     /deep/ .van-tabs__nav--complete {
       padding-right: 0;
@@ -121,7 +126,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #fff;
+      background-color: #ffeded;
       border-left: 1px solid #e0e0e0;
       border-bottom: 1px solid #e0e0e0;
       /deep/ .van-icon {

@@ -19,10 +19,12 @@
     </van-cell>
     <van-grid :gutter="10">
       <van-grid-item
+        :class="{highlight : index === active }"
         :icon=" isDeleteShow && index ? 'close' : '' "
         v-for="(channels,index) in myChannels"
         :key="index"
         :text="channels.name"
+        @click="onMyChannelsClick(index)"
       />
     </van-grid>
     <!-- 推荐频道 -->
@@ -55,6 +57,10 @@ export default {
     myChannels: {
       type: Array,
       require: true
+    },
+    active: {
+      type: Number,
+      require: true
     }
   },
   data () {
@@ -82,8 +88,26 @@ export default {
     },
     onAdd (channels) {
       this.myChannels.push(channels)
+    },
+    onMyChannelsClick (index) {
+      if (this.isDeleteShow && index !== 0) {
+        this.deleteChannels(index)
+      }
+      if (!this.isDeleteShow) {
+        this.switchChannels(index)
+      }
+    },
+    deleteChannels (index) {
+      console.log('deleteChannels')
+      if (index <= this.active) {
+        this.$emit('u-active', this.active - 1)
+      }
+      this.myChannels.splice(index, 1)
+    },
+    switchChannels (index) {
+      console.log('switchChannels')
+      this.$emit('close', index)
     }
-
   }
 }
 </script>
@@ -96,6 +120,11 @@ export default {
   }
   .van-grid-item {
     height: 40px;
+  }
+  .highlight {
+    /deep/.van-grid-item__text {
+      color: rgb(218, 60, 60) !important;
+    }
   }
   /deep/ .van-grid-item__content {
     background-color: rgb(247, 247, 247);
