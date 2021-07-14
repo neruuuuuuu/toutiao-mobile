@@ -8,6 +8,7 @@
           shape="round"
           background="rgb(255, 187, 199)"
           placeholder="请输入搜索关键词"
+          @click="$router.push('/search')"
         />
       </template>
     </van-nav-bar>
