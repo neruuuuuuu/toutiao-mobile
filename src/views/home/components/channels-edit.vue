@@ -24,7 +24,7 @@
         v-for="(channels,index) in myChannels"
         :key="index"
         :text="channels.name"
-        @click="onMyChannelsClick(index)"
+        @click="onMyChannelsClick(channels,index)"
       />
     </van-grid>
     <!-- 推荐频道 -->
@@ -49,7 +49,9 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channels'
+import { getAllChannels, addUserChannel, deleteUserChannel } from '@/api/channels'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/storage'
 
 export default {
   name: 'ChannelEdit',
@@ -70,6 +72,8 @@ export default {
     }
   },
   computed: {
+    ...mapState(['user']),
+
     recommendChannels () {
       return this.allChannels.filter(channels => {
         return !this.myChannels.find(myChannels => {
@@ -86,23 +90,34 @@ export default {
       const { data } = await getAllChannels()
       this.allChannels = data.data.channels
     },
-    onAdd (channels) {
+    async onAdd (channels) {
       this.myChannels.push(channels)
+      if (this.user) {
+        await addUserChannel([{ id: channels.id, seq: this.myChannels.length }])
+      } else {
+        setItem('my-channels', this.myChannels)
+      }
     },
-    onMyChannelsClick (index) {
+    onMyChannelsClick (channels, index) {
       if (this.isDeleteShow && index !== 0) {
-        this.deleteChannels(index)
+        this.deleteChannels(channels, index)
       }
       if (!this.isDeleteShow) {
         this.switchChannels(index)
       }
     },
-    deleteChannels (index) {
+    async deleteChannels (channels, index) {
       console.log('deleteChannels')
       if (index <= this.active) {
         this.$emit('u-active', this.active - 1)
       }
       this.myChannels.splice(index, 1)
+
+      if (this.user) {
+        await deleteUserChannel(channels.id)
+      } else {
+        setItem('my-channels', this.myChannels)
+      }
     },
     switchChannels (index) {
       console.log('switchChannels')

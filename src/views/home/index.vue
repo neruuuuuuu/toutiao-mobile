@@ -59,6 +59,9 @@
 import { getUserChannels } from '@/api/user.js'
 import ArticleList from '@/views/home/components/article-list'
 import ChannelsEdit from './components/channels-edit.vue'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
+
 export default {
   name: 'HomeIndex',
   components: {
@@ -73,14 +76,31 @@ export default {
       isChannelsEditShow: false
     }
   },
+  computed: {
+    ...mapState(['user'])
+  },
   created () {
     this.loadChannels()
   },
   methods: {
     async loadChannels () {
-      const { data } = await getUserChannels()
-      this.userChannels = data.data.channels
-      console.log(data)
+      try {
+        if (this.user) {
+          const { data } = await getUserChannels()
+          this.userChannels = data.data.channels
+        } else {
+          const localChannels = getItem('channnels')
+          if (localChannels) {
+            this.userChannels = localChannels
+          } else {
+            const { data } = await getUserChannels()
+            this.userChannels = data.data.channels
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        this.$toast('数据获取失败')
+      }
     }
   }
 }
