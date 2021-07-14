@@ -57,9 +57,9 @@
 </template>
 
 <script>
-import { getUserChannels } from '@/api/user.js'
 import ArticleList from '@/views/home/components/article-list'
 import ChannelsEdit from './components/channels-edit.vue'
+import { getUserChannels } from '@/api/user.js'
 import { mapState } from 'vuex'
 import { getItem } from '@/utils/storage'
 
