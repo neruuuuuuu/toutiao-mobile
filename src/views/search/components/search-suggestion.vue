@@ -2,10 +2,14 @@
   <div class="search-suggestion">
     <van-cell
       icon="search"
-      :title="suggestion"
       v-for="(suggestion,index) in suggestions"
       :key="index"
-    />
+    >
+      <div
+        slot="title"
+        v-html="highlight(suggestion,searchValue)"
+      ></div>
+    </van-cell>
   </div>
 </template>
 
@@ -46,7 +50,15 @@ export default {
     }
   },
   computed: {},
-  methods: {},
+  methods: {
+    highlight (suggestion, keyword) {
+      // RegExp 是原生 JavaScript 的内置构造函数
+      // 参数1：字符串，注意，这里不要加 //
+      // 参数2：匹配模式，g 全局，i 忽略大小写
+      const reg = new RegExp(keyword, 'gi')
+      return suggestion.replace(reg, `<span style="color: #3296fa">${keyword}</span>`)
+    }
+  },
   created () { },
   mounted () { }
 }
