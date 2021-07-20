@@ -11,6 +11,7 @@
 
 <script>
 import { getSearchSuggestions } from '@/api/search'
+import { debounce } from 'lodash'
 
 export default {
   name: 'SearchSuggestion',
@@ -35,10 +36,12 @@ export default {
 
     // 完整写法
     searchValue: {
-      async handler () {
+      // 防抖 debounce
+      handler: debounce(async function () {
         const { data } = await getSearchSuggestions(this.searchValue)
         this.suggestions = data.data.options
-      },
+      }, 300),
+      // 有请求需要再也没初始化的时候就执行一次
       immediate: true
     }
   },
