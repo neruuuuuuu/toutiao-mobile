@@ -6,7 +6,7 @@
       shape="round"
       background="rgb(255, 187, 199)"
       placeholder="请输入搜索关键词"
-      @search="onSearch"
+      @search="onSearch(searchText)"
       show-action
       @focus="isResultShow=false"
     >
@@ -19,11 +19,15 @@
       </template>
     </van-search>
     <!-- 搜索结果 -->
-    <search-result v-if="isResultShow" />
+    <search-result
+      v-if="isResultShow"
+      :search-value="searchValue"
+    />
     <!-- 联想建议 -->
     <search-suggestion
       v-else-if="searchValue"
       :search-value="searchValue"
+      @suggestionSearch="onSearch"
     />
     <!-- 搜索历史 -->
     <search-history v-else />
@@ -44,7 +48,8 @@ export default {
     }
   },
   methods: {
-    onSearch () {
+    onSearch (searchText) {
+      this.searchValue = searchText
       this.isResultShow = true
     }
   }
