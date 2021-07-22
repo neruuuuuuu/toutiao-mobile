@@ -6,7 +6,7 @@
       shape="round"
       background="rgb(255, 187, 199)"
       placeholder="请输入搜索关键词"
-      @search="onSearch(searchText)"
+      @search="onSearch(searchValue)"
       show-action
       @focus="isResultShow=false"
     >
@@ -30,7 +30,10 @@
       @suggestionSearch="onSearch"
     />
     <!-- 搜索历史 -->
-    <search-history v-else />
+    <search-history
+      v-else
+      :search-histories=searchHistories
+    />
   </div>
 </template>
 
@@ -38,19 +41,38 @@
 import SearchHistory from './components/search-history.vue'
 import SearchResult from './components/search-result.vue'
 import SearchSuggestion from './components/search-suggestion.vue'
+import { setItem, getItem } from '@/utils/storage'
 export default {
   components: { SearchSuggestion, SearchHistory, SearchResult },
   name: 'SearchIndex',
   data () {
     return {
       searchValue: '',
-      isResultShow: false
+      isResultShow: false,
+      searchHistories: getItem('search-histories') || []
     }
   },
   methods: {
     onSearch (searchText) {
-      this.searchValue = searchText
-      this.isResultShow = true
+      // 判断输入是否为空
+      if (!searchText) {
+
+      } else {
+        this.searchValue = searchText
+        // 在搜索历史中查找是否已存在
+        const index = this.searchHistories.indexOf(searchText)
+        // 删除相同的搜索历史
+        if (index !== -1) {
+          this.searchHistories.splice(index, 1)
+        }
+        // 队头插入搜索历史
+        this.searchHistories.unshift(searchText)
+        // 本地存储搜索历史
+        setItem('search-histories', this.searchHistories)
+
+        // 展示搜索结果
+        this.isResultShow = true
+      }
     }
   }
 }

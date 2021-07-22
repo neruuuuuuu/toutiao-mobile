@@ -12,7 +12,11 @@
         @click="isHistoryEdit=true"
       ></van-icon>
     </van-cell>
-    <van-cell title="vue">
+    <van-cell
+      :title="history"
+      v-for="(history,index) in searchHistories"
+      :key="index"
+    >
       <van-icon
         name="close"
         v-if="isHistoryEdit"
@@ -25,7 +29,12 @@
 export default {
   name: 'SearchHistory',
   components: {},
-  props: {},
+  props: {
+    searchHistories: {
+      type: Array,
+      require: true
+    }
+  },
   data () {
     return {
       isHistoryEdit: false
