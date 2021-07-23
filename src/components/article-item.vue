@@ -1,7 +1,15 @@
 <template>
   <div class="article-item">
     <!-- 单元格 -->
-    <van-cell class="article-cell ">
+    <van-cell
+      class="article-cell"
+      :to="{
+        name:'article',
+        params:{
+          articleId : article.art_id
+        }
+      }"
+    >
       <!-- 单元格标题 -->
       <div
         slot="title"
