@@ -4,7 +4,7 @@
       v-if="user"
       class="my-info"
     >
-      <!-- 第一行 -->
+      <!-- 头像、用户名、编辑 -->
       <van-cell
         class="frist-row"
         center
@@ -28,7 +28,7 @@
           round
         >编辑</van-button>
       </van-cell>
-      <!-- 第二行 -->
+      <!-- 头条、关注、粉丝、获赞 -->
       <van-grid :border="false">
         <van-grid-item>
           <div slot="text">
@@ -57,6 +57,7 @@
       </van-grid>
 
     </van-cell-group>
+    <!-- 未登录 -->
     <div
       v-else
       class="no-login"
@@ -78,7 +79,7 @@
       >点击登录</div>
 
     </div>
-    <!-- 第三行 -->
+    <!-- 收藏、历史 -->
     <van-grid
       :column-num="2"
       class="mb-4"
@@ -92,7 +93,7 @@
         text="历史"
       />
     </van-grid>
-    <!-- 第四行 -->
+    <!-- 消息通知、小小同学 -->
     <van-cell
       v-if="user"
       title="消息通知"
@@ -105,7 +106,7 @@
       is-link
       to=""
     />
-    <!-- 第五行 -->
+    <!-- 退出登录 -->
     <van-cell
       v-if="user"
       class="fifth-row"
