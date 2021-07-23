@@ -4,7 +4,7 @@
       icon="search"
       v-for="(suggestion,index) in suggestions"
       :key="index"
-      @click="$emit('suggestionSearch',suggestion)"
+      @click="$emit('suggestion-search',suggestion)"
     >
       <div
         slot="title"

@@ -27,12 +27,14 @@
     <search-suggestion
       v-else-if="searchValue"
       :search-value="searchValue"
-      @suggestionSearch="onSearch"
+      @suggestion-search="onSearch"
     />
     <!-- 搜索历史 -->
     <search-history
       v-else
       :search-histories=searchHistories
+      @search="onSearch"
+      @delete-all="searchHistories = $event"
     />
   </div>
 </template>
@@ -52,6 +54,12 @@ export default {
       searchHistories: getItem('search-histories') || []
     }
   },
+  watch: {
+    searchHistories () {
+      // 本地存储搜索历史
+      setItem('search-histories', this.searchHistories)
+    }
+  },
   methods: {
     onSearch (searchText) {
       // 判断输入是否为空
@@ -67,8 +75,6 @@ export default {
         }
         // 队头插入搜索历史
         this.searchHistories.unshift(searchText)
-        // 本地存储搜索历史
-        setItem('search-histories', this.searchHistories)
 
         // 展示搜索结果
         this.isResultShow = true
