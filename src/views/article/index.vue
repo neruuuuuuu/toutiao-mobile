@@ -9,7 +9,7 @@
     />
     <!-- 文章标题 -->
     <h1 class="article-title">
-      11111
+      {{article.title}}
     </h1>
     <!-- 作者单元格 -->
     <van-cell
@@ -24,26 +24,29 @@
         height="50"
         round
         fit="cover"
-        src="https://img.yzcdn.cn/vant/cat.jpeg"
+        :src="article.aut_photo"
       />
       <!-- 作者名 -->
       <div
         class="auther-name"
         slot="title"
-      >bang</div>
+      >{{article.aut_name}}</div>
       <!-- 发布时间 -->
-      <div slot="label">aaa </div>
+      <div slot="label">{{article.pubdate | relativeTime}} </div>
       <!-- 关注按钮 -->
       <van-button
         size="small"
         round
-        icon="plus"
-      >关注</van-button>
+        :type="article.is_followed ? 'default':'info'"
+        :icon="article.is_followed ? '':'plus'"
+      >{{article.is_followed ? '已关注':'关注'}}</van-button>
     </van-cell>
     <!-- 文章正文 -->
-    <div class="markdown-bod">
-      <h1>qwert</h1>
-      <p>12345</p>
+    <div
+      ref="article-content"
+      class="markdown-bod"
+      v-html="article.content"
+    >
     </div>
     <!-- 评论列表 -->
 
@@ -53,24 +56,56 @@
 
 <script>
 import './github-markdown.css'
+import { getArticleById } from '@/api/article'
+import { ImagePreview } from 'vant'
 
 export default {
   name: 'ArticleIndex',
   components: {},
   props: {
     articleId: {
-      type: [Number, String],
+      type: [Number, String, Object],
       require: true
     }
   },
   data () {
     return {
+      article: {}
     }
   },
   watch: {},
   computed: {},
-  methods: {},
-  created () { },
+  methods: {
+    async loadArticle () {
+      const { data } = await getArticleById(this.articleId)
+      this.article = data.data
+
+      this.$nextTick(() => {
+        this.handelPreviewImage()
+      })
+    },
+    handelPreviewImage () {
+      // 获取DOM容器
+      const articleContent = this.$refs['article-content']
+      // 得到img标签
+      const imgs = articleContent.querySelectorAll('img')
+      // 循环注册点击事件
+      const imgPaths = []
+      imgs.forEach((img, index) => {
+        imgPaths.push(img.src)
+        img.onclick = function () {
+          // 调用ImagePreview()
+          ImagePreview({
+            images: imgPaths,
+            startPosition: index
+          })
+        }
+      })
+    }
+  },
+  created () {
+    this.loadArticle()
+  },
   mounted () { }
 }
 </script>
@@ -96,5 +131,8 @@ export default {
 .markdown-bod {
   padding: 15px;
   background-color: #fff;
+  /deep/ p {
+    text-align: justify;
+  }
 }
 </style>
