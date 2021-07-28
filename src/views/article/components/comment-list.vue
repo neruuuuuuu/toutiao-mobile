@@ -6,20 +6,24 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <van-cell
+      <comment-item
         v-for="(comment,index) in  articleComment.list"
         :key="index"
-        :title="comment"
-      />
+        :comment="comment"
+      ></comment-item>
     </van-list>
   </div>
 </template>
 
 <script>
 import { getComments } from '@/api/comment'
+import CommentItem from './comment-item.vue'
+
 export default {
   name: 'CommentList',
-  components: {},
+  components: {
+    CommentItem
+  },
   props: {
     articleId: {
       type: [Number, String, Object],
@@ -49,8 +53,6 @@ export default {
         offset: articleComment.offset, // 获取评论数据的偏移量，值为评论id，表示从此id的数据向后取，不传表示从第一页开始读取数据
         limit: 10 // 每页大小
       })
-      console.log('评论')
-      console.log(data)
 
       // 2. 将数据添加到列表中
       const { results } = data.data
